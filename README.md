@@ -16,6 +16,13 @@ venv\Scripts\activate
 pip install -r requirements.txt
 Zbieranie danych
 
+Filmiki i przydatne strony pokazujace jak poprawnie migać:
+https://www.youtube.com/watch?v=xpisaLwDmn4
+https://www.youtube.com/watch?v=1UofccUa3U0
+https://www.pzg.szczecin.pl/multimedialny-slownik-jezyka-migowego/?1&cale#home
+https://spreadthesign.com/pl.pl/alphabet/29/
+https://www.youtube.com/watch?v=tybvooQblkc&list=PL6bKyVNfhEbacK3Z2hXVoyYUeyLWRDZXz&index=9
+
 python collect_pjm.py
 S — nagraj litery statyczne (bez ruchu)
 D — nagraj litery dynamiczne (z ruchem)
