@@ -30,6 +30,4 @@ I — sprawdź ile masz już nagrań
 SPACJA — zapisz zdjęcie / zacznij nagrywanie
 R — usuń ostatnie nagranie
 Q — wyjdź
-Wyślij dane
 
-Po nagraniu skompresuj folder data/ i wyślij na: aniasarnacka5@gmail.com lub sarnavka na DC
