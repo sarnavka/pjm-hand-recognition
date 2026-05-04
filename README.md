@@ -1,0 +1,28 @@
+PJM Hand Recognition
+Projekt rozpoznawania liter daktylografii PJM (Polski Język Migowy) w czasie rzeczywistym przy użyciu MediaPipe i sieci neuronowych.
+
+Jak możesz pomóc?
+Potrzebujemy nagrań gestów dla wszystkich liter PJM. Im więcej osób nagra dane, tym dokładniejszy będzie model.
+
+Wymagania
+Python 3.10+
+Kamera internetowa
+Instalacja
+
+git clone git@github.com:sarnavka/pjm-hand-recognition.git
+cd pjm-hand-recognition
+python -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
+Zbieranie danych
+
+python collect_pjm.py
+S — nagraj litery statyczne (bez ruchu)
+D — nagraj litery dynamiczne (z ruchem)
+I — sprawdź ile masz już nagrań
+SPACJA — zapisz zdjęcie / zacznij nagrywanie
+R — usuń ostatnie nagranie
+Q — wyjdź
+Wyślij dane
+
+Po nagraniu skompresuj folder data/ i wyślij na: aniasarnacka5@gmail.com lub sarnavka na DC
