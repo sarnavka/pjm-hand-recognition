@@ -1,0 +1,17 @@
+venv/
+__pycache__/
+*.pyc
+screenshots/
+data/
+reports/
+
+# Modele wytrenowane
+models/*.h5
+models/*.keras
+models/*.pkl
+models/compare/
+models/compare_mobile/
+models/*.txt
+
+# Nie ignoruj modelu MediaPipe
+!models/hand_landmarker.task
