@@ -15,7 +15,6 @@ cd pjm-hand-recognition
 python -m venv venv
 venv\Scripts\activate
 pip install -r requirements.txt
-Zbieranie danych
 
 Filmiki i przydatne strony pokazujace jak poprawnie migać:
 https://www.youtube.com/watch?v=xpisaLwDmn4,
