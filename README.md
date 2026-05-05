@@ -2,7 +2,8 @@ PJM Hand Recognition
 Projekt rozpoznawania liter daktylografii PJM (Polski Język Migowy) w czasie rzeczywistym przy użyciu MediaPipe i sieci neuronowych.
 
 Jak możesz pomóc?
-Potrzebujemy nagrań gestów dla wszystkich liter PJM. Im więcej osób nagra dane, tym dokładniejszy będzie model.
+Potrzebujemy nagrań gestów dla wszystkich liter PJM. Im więcej osób nagra dane, tym dokładniejszy będzie model. 
+Optymalna odległość: 50–80 cm od kamery (mniej więcej długość wyciągniętego ramienia). Pozycja: stojąca, kamera na poziomie klatki piersiowej. Tło: jednolite 
 
 Wymagania
 Python 3.10+
