@@ -3,7 +3,7 @@ Projekt rozpoznawania liter daktylografii PJM (Polski Język Migowy) w czasie rz
 
 Jak możesz pomóc?
 Potrzebujemy nagrań gestów dla wszystkich liter PJM. Im więcej osób nagra dane, tym dokładniejszy będzie model. 
-Optymalna odległość: 50–80 cm od kamery (mniej więcej długość wyciągniętego ramienia). Pozycja: stojąca, kamera na poziomie klatki piersiowej. Tło: jednolite 
+Optymalna odległość: 50–80 cm od kamery (mniej więcej długość wyciągniętego ramienia). Pozycja: kamera na poziomie klatki piersiowej. 40-60 próbek na literę.
 
 Wymagania
 Python 3.10+
