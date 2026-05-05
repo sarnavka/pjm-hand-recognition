@@ -25,10 +25,3 @@ https://spreadthesign.com/pl.pl/alphabet/29/
 https://www.youtube.com/watch?v=tybvooQblkc&list=PL6bKyVNfhEbacK3Z2hXVoyYUeyLWRDZXz&index=9
 
 python collect_pjm.py
-S — nagraj litery statyczne (bez ruchu)
-D — nagraj litery dynamiczne (z ruchem)
-I — sprawdź ile masz już nagrań
-SPACJA — zapisz zdjęcie / zacznij nagrywanie
-R — usuń ostatnie nagranie
-Q — wyjdź
-
