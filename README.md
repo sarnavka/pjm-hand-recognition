@@ -8,9 +8,7 @@ Optymalna odległość: 50–80 cm od kamery (mniej więcej długość wyciągni
 Wymagania
 Python 3.10+
 Kamera internetowa
-Instalacja
-
-git clone git@github.com:sarnavka/pjm-hand-recognition.git
+Instalacja: git clone git@github.com:sarnavka/pjm-hand-recognition.git
 cd pjm-hand-recognition
 python -m venv venv
 venv\Scripts\activate
