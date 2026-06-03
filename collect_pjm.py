@@ -6,7 +6,7 @@ Tryb STATYCZNY:
   Po sesji automatycznie aktualizuje data/pjm_landmarks.npz
 
 Tryb DYNAMICZNY:
-  Zapisuje sekwencje (20 klatek × 63) do data/pjm_sequences/<litera>/
+  Zapisuje sekwencje (30 klatek × 65) do data/pjm_sequences/<litera>/
 
 Sterowanie (w każdym trybie):
   SPACJA  – zrób zdjęcie / zacznij nagrywanie sekwencji
@@ -155,19 +155,19 @@ detector = mp_vision.HandLandmarker.create_from_options(opts)
 
 # ── POMOCNICZE ────────────────────────────────────────────────
 def detect_hand(frame_bgr):
-    """Zwraca (lm_list, lm_vec_82) lub (None, None) jeśli brak dłoni."""
+    """Zwraca (lm_list, lm_vec_82, wrist_xy) lub (None, None, None)."""
     rgb    = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2RGB)
     mp_img = mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb)
     result = detector.detect(mp_img)
     if not result.hand_landmarks:
-        return None, None
+        return None, None, None
     lm    = result.hand_landmarks[0]
     wrist = lm[0]
     pts   = np.array([[p.x - wrist.x, p.y - wrist.y, p.z - wrist.z]
                        for p in lm], dtype=np.float32)
     vec63  = pts.flatten()
     vec82  = np.concatenate([vec63, compute_finger_features(pts)])
-    return lm, vec82
+    return lm, vec82, (wrist.x, wrist.y)
 
 
 def draw_skeleton(frame, lm_list):
@@ -281,7 +281,7 @@ def update_landmarks():
             if img is None:
                 skipped += 1
                 continue
-            _, vec82 = detect_hand(img)
+            _, vec82, _ = detect_hand(img)
             if vec82 is not None:
                 X.append(vec82)
                 y.append(class_idx[cls])
@@ -466,7 +466,7 @@ def record_static(cap, letter):
         frame = cv2.flip(frame, 1)
         h, w  = frame.shape[:2]
 
-        lm_list, vec82 = detect_hand(frame)
+        lm_list, vec82, _ = detect_hand(frame)
         hand_ok = lm_list is not None
 
         if hand_ok:
@@ -530,10 +530,11 @@ def record_dynamic(cap, letter):
     """Nagrywa sekwencje dynamiczne dla danej litery."""
     cur_seq_len = SEQ_LEN_OVERRIDE.get(letter, SEQ_LEN)
     seq_idx = next_seq_idx(letter)
-    state   = 'IDLE'    # IDLE | COUNTDOWN | RECORDING | FLASH
-    cdown_t = 0
-    buffer  = []
-    flash_t = 0
+    state       = 'IDLE'    # IDLE | COUNTDOWN | RECORDING | FLASH
+    cdown_t     = 0
+    buffer      = []
+    flash_t     = 0
+    prev_wrist  = None      # poprzednia bezwzgl. pozycja nadgarstka
 
     while True:
         ret, frame = cap.read()
@@ -542,15 +543,23 @@ def record_dynamic(cap, letter):
         frame = cv2.flip(frame, 1)
         h, w  = frame.shape[:2]
 
-        lm_list, vec82 = detect_hand(frame)
+        lm_list, vec82, wrist_xy = detect_hand(frame)
         hand_ok = lm_list is not None
 
         if hand_ok:
             draw_skeleton(frame, lm_list)
-            # Tylko pierwsze 63 wartości (x,y,z) dla sekwencji LSTM
-            lm_vec63 = vec82[:63] if vec82 is not None else None
+            vec63 = vec82[:63]
+            # Prędkość nadgarstka (delta bezwzgl. pozycji)
+            if prev_wrist is not None:
+                dw = np.array([wrist_xy[0] - prev_wrist[0],
+                               wrist_xy[1] - prev_wrist[1]], dtype=np.float32)
+            else:
+                dw = np.zeros(2, dtype=np.float32)
+            prev_wrist = wrist_xy
+            lm_vec65 = np.concatenate([vec63, dw])
         else:
-            lm_vec63 = None
+            lm_vec65   = None
+            prev_wrist = None
 
         # Panel górny
         cv2.rectangle(frame, (0, 0), (w, 65), (10, 20, 30), -1)
@@ -595,11 +604,12 @@ def record_dynamic(cap, letter):
                             cv2.FONT_HERSHEY_SIMPLEX, 5, (0, 165, 255), 10)
 
         elif state == 'RECORDING':
-            if lm_vec63 is not None:
-                buffer.append(lm_vec63)
+            if lm_vec65 is not None:
+                buffer.append(lm_vec65)
             else:
-                state  = 'IDLE'
-                buffer = []
+                state      = 'IDLE'
+                buffer     = []
+                prev_wrist = None
                 cv2.putText(frame, "Reka znikla – sprobuj ponownie",
                             (10, h - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.65, (80, 80, 220), 2)
 
