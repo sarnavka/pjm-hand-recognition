@@ -3,7 +3,7 @@ Projekt rozpoznawania liter PJM (Polski Język Migowy) w czasie rzeczywistym prz
 
 Jak możesz pomóc?
 Potrzebuje nagrań gestów dla wszystkich liter PJM. Im więcej osób nagra dane, tym dokładniejszy będzie model. 
-Optymalna odległość: 50–80 cm od kamery (mniej więcej długość wyciągniętego ramienia). Pozycja: kamera na poziomie klatki piersiowej. Idealnie: 40-60 próbek na literę nagrywane najlepiej na przestrzeni kilku dni, by ułożenie ręki było różne na każdym nagraniu, np. przez 5-10 dni do każdej litery po 5 próbek. Oczywiście dostosuj do swoich możliwości. Za każdą pomoc dziękuję <3.
+Optymalna odległość: 50–80 cm od kamery (mniej więcej długość wyciągniętego ramienia). Pozycja: kamera na poziomie klatki piersiowej, jednolite tło. Idealnie: 20-40 próbek na literę nagrywane najlepiej na przestrzeni kilku dni, by ułożenie ręki było różne na każdym nagraniu, np. przez 5-10 dni do każdej litery po 5 próbek. Oczywiście dostosuj do swoich możliwości. Za każdą pomoc dziękuję <3.
 
 Wymagania
 Python 3.10+
