@@ -18,7 +18,7 @@ Za każdą pomoc dziękuję <3
 ## Wymagania
 
 - Python 3.10–3.11 (nowsze wersje mogą mieć problem z instalacją MediaPipe)
-- Kamera internetowa
+- Kamera internetowa podłączona przed nagrywaniem
 
 ## Instalacja
 
