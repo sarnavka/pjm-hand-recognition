@@ -10,7 +10,7 @@ Potrzebuję nagrań gestów dla wszystkich liter PJM. Im więcej osób nagra dan
 - **Pozycja:** kamera na poziomie klatki piersiowej, jednolite tło
 - **Ile nagrywać:** idealnie 40 próbek na literę od Ciebie (w aplikacji zobaczysz pasek postępu z celem 120 — to łączny cel projektu, sumowany z nagrań kilku osób, nie musisz dobić do niego sam)
 - Najlepiej nagrywać na przestrzeni kilku dni, np. przez 4 dni po 10 próbek na literę
-- Zależy mi, żeby ułożenie ręki było trochę inne na każdym nagraniu (kąt, odległość, oświetlenie)
+- Zależy mi, żeby ułożenie ręki było trochę inne na każdym nagraniu- kąt, odległość, oświetlenie, dlatego rozłożenie nagrywania w czasie
 - Oczywiście dostosuj do swoich możliwości — każda pomoc się liczy
 
 Za każdą pomoc dziękuję <3
