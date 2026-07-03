@@ -38,7 +38,6 @@ Instalacja zależności (tylko to, co potrzebne do nagrywania — bez ciężkieg
 Filmiki i przydatne strony:
 - https://www.youtube.com/watch?v=xpisaLwDmn4
 - https://www.youtube.com/watch?v=1UofccUa3U0
-- https://www.youtube.com/watch?v=RrNBxkB3pyc
 - https://www.pzg.szczecin.pl/multimedialny-slownik-jezyka-migowego/?1&cale#home
 - https://spreadthesign.com/pl.pl/alphabet/29/
 - https://www.youtube.com/watch?v=tybvooQblkc&list=PL6bKyVNfhEbacK3Z2hXVoyYUeyLWRDZXz&index=9
