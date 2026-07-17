@@ -23,6 +23,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 os.environ['MEDIAPIPE_DISABLE_GPU'] = '1'
 
 import sys
+import argparse
 import cv2
 import numpy as np
 import mediapipe as mp
@@ -661,9 +662,148 @@ def record_dynamic(cap, letter):
     return 'quit'
 
 
+# ── WYBÓR KAMERY ──────────────────────────────────────────────
+# Wymuszone na DirectShow na Windows - wirtualne kamery typu Iriun/DroidCam
+# często rejestrują się TYLKO jako filtr DirectShow, a nie Media Foundation
+# (domyślny backend OpenCV od pewnej wersji). Bez tego indeksy wykryte przy
+# probingu mogłyby nie odpowiadać indeksom otwieranym później.
+CAM_BACKEND = cv2.CAP_DSHOW if os.name == 'nt' else cv2.CAP_ANY
+
+
+def probe_camera(idx, attempts=5):
+    """Sprawdza czy kamera o danym indeksie faktycznie dostarcza obraz."""
+    cap = cv2.VideoCapture(idx, CAM_BACKEND)
+    if not cap.isOpened():
+        cap.release()
+        return False
+    ok = False
+    for _ in range(attempts):
+        ret, frame = cap.read()
+        if ret and frame is not None:
+            ok = True
+            break
+    cap.release()
+    return ok
+
+
+def find_cameras(max_idx=6):
+    """Zwraca listę indeksów kamer, które faktycznie dają obraz
+    (np. wbudowana kamera + wirtualna z Iriun/DroidCam)."""
+    return [i for i in range(max_idx) if probe_camera(i)]
+
+
+VIRTUAL_CAM_HINTS = ('iriun', 'droidcam', 'epoccam', 'camo', 'ivcam')
+
+
+def get_camera_names():
+    """Windows: zwraca nazwy urządzeń wideo (DirectShow) w kolejności
+    indeksów OpenCV, albo None gdy niedostępne (brak pygrabber / nie-Windows)."""
+    if os.name != 'nt':
+        return None
+    try:
+        from pygrabber.dshow_graph import FilterGraph
+        return FilterGraph().get_input_devices()
+    except Exception:
+        return None
+
+
+def describe_camera(idx, names):
+    name = names[idx] if names and idx < len(names) else f"kamera {idx}"
+    hint = "   ← to prawdopodobnie Iriun/DroidCam" \
+        if any(h in name.lower() for h in VIRTUAL_CAM_HINTS) else ""
+    return f"[{idx}] {name}{hint}"
+
+
+def select_camera_visually(found, names):
+    """Podgląd na żywo z każdej znalezionej kamery, z podpisem –
+    przełączanie N, wybór ENTER/SPACJA, anulowanie Q (bierze pierwszą)."""
+    pos      = 0
+    cur_idx  = None
+    cap      = None
+    try:
+        while True:
+            idx = found[pos]
+            if idx != cur_idx:
+                if cap is not None:
+                    cap.release()
+                cap     = cv2.VideoCapture(idx, CAM_BACKEND)
+                cur_idx = idx
+
+            ret, frame = cap.read()
+            if not ret or frame is None:
+                frame = np.zeros((480, 640, 3), dtype=np.uint8)
+            frame = cv2.flip(frame, 1)
+            h, w  = frame.shape[:2]
+
+            overlay = frame.copy()
+            cv2.rectangle(overlay, (0, 0), (w, 70), (10, 10, 10), -1)
+            cv2.addWeighted(overlay, 0.75, frame, 0.25, 0, frame)
+            label = describe_camera(idx, names)
+            put_text_pl(frame, f"{pos + 1}/{len(found)}:  {label}",
+                        (15, 14), 24, (80, 220, 80))
+            cv2.putText(frame,
+                        "N = nastepna kamera  |  ENTER/SPACJA = wybierz  |  Q = anuluj",
+                        (15, h - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (200, 200, 200), 1)
+
+            cv2.imshow('Wybor kamery – podglad na zywo', frame)
+            k = cv2.waitKey(30) & 0xFF
+            if k in (13, 32):          # Enter / Spacja
+                return idx
+            elif k == ord('n'):
+                pos = (pos + 1) % len(found)
+            elif k in (ord('q'), 27):  # Q / Esc
+                return found[0]
+    finally:
+        if cap is not None:
+            cap.release()
+        cv2.destroyWindow('Wybor kamery – podglad na zywo')
+
+
+def open_camera(forced_idx=None):
+    if forced_idx is not None:
+        cap = cv2.VideoCapture(forced_idx, CAM_BACKEND)
+        if not cap.isOpened():
+            print(f"  Nie udało się otworzyć kamery o indeksie {forced_idx}.")
+            sys.exit(1)
+        return cap
+
+    print("  Szukam dostępnych kamer...")
+    found = find_cameras()
+    names = get_camera_names()
+
+    if not found:
+        print("  Nie znaleziono żadnej działającej kamery.")
+        print("  Jeśli używasz Iriun/DroidCam – upewnij się, że aplikacja")
+        print("  na telefonie jest otwarta i połączona z komputerem, a potem")
+        print("  uruchom skrypt ponownie.")
+        sys.exit(1)
+
+    if len(found) == 1:
+        idx = found[0]
+        print(f"  Znaleziono kamerę: {describe_camera(idx, names)} – używam jej.")
+    else:
+        print(f"  Znaleziono {len(found)} kamery:")
+        for idx in found:
+            print(f"    {describe_camera(idx, names)}")
+        print("  Otwieram podgląd na żywo – klawisz N przełącza kamerę, "
+              "ENTER/SPACJA wybiera.")
+        idx = select_camera_visually(found, names)
+        print(f"  Wybrano: {describe_camera(idx, names)}")
+
+    return cv2.VideoCapture(idx, CAM_BACKEND)
+
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--camera', type=int, default=None,
+                         help='Indeks kamery – pomija automatyczne wykrywanie')
+    return parser.parse_args()
+
+
 # ── GŁÓWNA PĘTLA ──────────────────────────────────────────────
 def main():
-    cap = cv2.VideoCapture(0)
+    args = parse_args()
+    cap = open_camera(args.camera)
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
 
