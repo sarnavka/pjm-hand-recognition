@@ -71,21 +71,21 @@ def draw_text_pl(frame, text, pos, size, color_bgr, stroke=0):
     frame[:] = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
 
 def draw_big_letter(frame, text, color_bgr):
-    """Wyśrodkowana duża litera – obsługuje polskie znaki."""
+    """Duża litera z boku ekranu – nie zasłania dłoni na środku."""
     h, w = frame.shape[:2]
     if not _PIL_OK:
-        fs = 5
+        fs = 4
         ts = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, fs, 9)[0]
-        cx = (w - ts[0]) // 2; cy = h // 2 + ts[1] // 2 + 30
+        cx = w - ts[0] - 20; cy = h // 2 + ts[1] // 2 + 30
         cv2.putText(frame, text, (cx+3, cy+3), cv2.FONT_HERSHEY_SIMPLEX, fs, (0,0,0), 13)
         cv2.putText(frame, text, (cx, cy),     cv2.FONT_HERSHEY_SIMPLEX, fs, color_bgr, 9)
         return
-    sz   = min(h // 3, 190)
+    sz   = min(h // 4, 140)
     font = _get_font(sz)
     img  = PILImage.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
     draw = ImageDraw.Draw(img)
     bb   = font.getbbox(text)
-    cx   = (w - (bb[2] - bb[0])) // 2 - bb[0]
+    cx   = w - (bb[2] - bb[0]) - bb[0] - 20
     cy   = (h - (bb[3] - bb[1])) // 2 - bb[1] + 30
     draw.text((cx+3, cy+3), text, font=font, fill=(0, 0, 0),
               stroke_width=4, stroke_fill=(0, 0, 0))
@@ -465,7 +465,7 @@ def draw_ui(frame, letter, conf, source, bbox=None):
     if source == 'HIDE':
         msg = "ROZPOZNANO:"
         ts  = cv2.getTextSize(msg, cv2.FONT_HERSHEY_SIMPLEX, 0.9, 2)[0]
-        cv2.putText(frame, msg, ((w - ts[0]) // 2, h // 2 - 110),
+        cv2.putText(frame, msg, (w - ts[0] - 20, h // 2 - 110),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.9, lc, 2)
 
     # Pasek pewności

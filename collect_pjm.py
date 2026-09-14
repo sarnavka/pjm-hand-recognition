@@ -82,26 +82,26 @@ def put_text_pl(frame, text, pos, font_size, color_bgr, stroke=0):
 
 
 def draw_big_letter(frame, letter, color_bgr):
-    """Rysuje dużą wyśrodkowaną literę na klatce (obsługuje polskie znaki)."""
+    """Rysuje dużą literę z boku ekranu – nie zasłania dłoni na środku."""
     h, w = frame.shape[:2]
     if not _PIL_OK:
-        fs = 6
+        fs = 5
         ts = cv2.getTextSize(letter, cv2.FONT_HERSHEY_SIMPLEX, fs, 10)[0]
-        cx = (w - ts[0]) // 2
+        cx = w - ts[0] - 20
         cy = h // 2 + ts[1] // 2
         cv2.putText(frame, letter, (cx + 3, cy + 3),
                     cv2.FONT_HERSHEY_SIMPLEX, fs, (0, 0, 0), 14)
         cv2.putText(frame, letter, (cx, cy),
                     cv2.FONT_HERSHEY_SIMPLEX, fs, color_bgr, 10)
         return
-    font_size = min(h // 3, 200)
+    font_size = min(h // 4, 150)
     font = _get_font(font_size)
     img_pil = PILImage.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
     draw = ImageDraw.Draw(img_pil)
     bbox = font.getbbox(letter)
     tw = bbox[2] - bbox[0]
     th = bbox[3] - bbox[1]
-    cx = (w - tw) // 2 - bbox[0]
+    cx = w - tw - bbox[0] - 20
     cy = (h - th) // 2 - bbox[1]
     draw.text((cx + 3, cy + 3), letter, font=font, fill=(0, 0, 0),
               stroke_width=4, stroke_fill=(0, 0, 0))
@@ -465,6 +465,7 @@ def record_static(cap, letter):
         if not ret:
             break
         frame = cv2.flip(frame, 1)
+        clean_frame = frame.copy()
         h, w  = frame.shape[:2]
 
         lm_list, vec82, _ = detect_hand(frame)
@@ -514,7 +515,7 @@ def record_static(cap, letter):
                     print(f"  Usunięto {letter}{img_idx}.jpg")
         elif k == ord(' '):
             if hand_ok:
-                path = save_image(letter, img_idx, frame)
+                path = save_image(letter, img_idx, clean_frame)
                 print(f"  Zapisano {path}")
                 img_idx += 1
                 # Błysk
